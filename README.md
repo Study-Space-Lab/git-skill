@@ -40,7 +40,16 @@
 	- [Phạm vi phủ sóng](#phạm-vi-phủ-sóng)
 	- [Khi nào lên dùng Gitignore?](#khi-nào-lên-dùng-gitignore)
 	- [Chú ý – Git cache](#chú-ý--git-cache)
-- [Thực hành các lệnh Git cơ bản làm việc với Repository](#thực-hành-các-lệnh-git-cơ-bản-làm-việc-với-repository)
+- [Lý thuyết về Nhánh trong Git](#lý-thuyết-về-nhánh-trong-git)
+	- [Branch là gì?](#branch-là-gì)
+	- [Branch tích hợp (Integration branch)](#branch-tích-hợp-integration-branch)
+	- [Branch chủ đề (Topic branch)](#branch-chủ-đề-topic-branch)
+	- [Chuyển đổi branches](#chuyển-đổi-branches)
+	- [HEAD](#head)
+	- [Stash](#stash)
+	- [Merge](#merge)
+	- [Rebase](#rebase)
+- [Kỹ thuật phân và gộp Nhánh](#kỹ-thuật-phân-và-gộp-nhánh)
 
 # VCS và Git
 
@@ -1083,4 +1092,135 @@ git add
 
 Và bây giờ bạn lại commit và push như bình thường.
 
-# Thực hành các lệnh Git cơ bản làm việc với Repository
+# Lý thuyết về Nhánh trong Git
+
+## Branch là gì?
+
+Branch là cái dùng để phân nhánh và ghi lại luồng của lịch sử. Branch đã phân nhánh sẽ không ảnh hưởng đến branch khác nên có thể tiến hành nhiều thay đổi đồng thời trong cùng 1 repository.
+
+Hơn nữa, branch đã phân nhánh có thể chỉnh sửa tổng hợp lại thành 1 branch bằng việc hợp lại (merge) với branch khác.
+
+Sơ đồ bên dưới là mô hình của thao tác song song đã sử dụng branch.
+
+Các thành viên của nhóm sẽ tạo branch dùng riêng cho công việc của mình từ branch chính để không ảnh hưởng đến công việc của các thành viên khác. Sau đó, những thành viên đã hoàn thành công việc của mình sẽ thực hiện đưa thay đổi của mình vào branch chính. Theo cách như vậy, sẽ không bị ảnh hưởng từ công việc của các thành viên khác, và bản thân mình có thể thực hiện công việc của mình.
+
+Hơn nữa, bằng việc để lại lịch sử theo đơn vị công việc, trong trường hợp có phát sinh vấn đề thì việc điều tra nguyên nhân ở những vị trí thay đổi cũng như việc tiến hành đối sách khắc phục sẽ trở nên dễ dàng hơn.
+
+<p align="center">
+	<img src="./img/branch.png" alt = "git-log">
+</P>
+
+Khi tiến hành commit lần đầu trong repository thì Git sẽ tạo ra một branch có tên là master. Vì thế những lần commit sau sẽ được thêm vào branch master cho đến khi chuyển đổi branch
+
+## Branch tích hợp (Integration branch)
+
+Branch tích hợp là branch có thể tạo ra bản phát hành bất cứ khi nào. Hơn nữa, nó cũng được sử dụng như là nguồn phân branch của branch chủ đề. Vì thế, việc duy trì trạng thái ổn định là điều cần thiết.
+
+Trường hợp tiến hành thay đổi gì đó sẽ thường tạo ra branch chủ đề rồi thực hiện thay đổi. Và việc kiểm tra và build tự động sử dụng công cụ CI như Jenkins chẳng hạn thì sẽ sử dụng branch này để tiến hành.
+
+Thông thường sẽ sử dụng branch master như là một branch tích hợp.
+
+## Branch chủ đề (Topic branch)
+
+Branch chủ đề là branch tạo ra nhằm tiến hành công việc liên quan đến chủ đề như là chỉnh sửa lỗi hay là thêm chức năng. Khi tiến hành cùng lúc những công việc có liên quan đến nhiều chủ đề thì số lượng branch chủ đề tương ứng sẽ được tạo ra.
+
+Branch chủ đề sẽ tạo ra bằng cách phân branch từ branch tích hợp đã ổn định, khi đã hoàn thành xong công việc sẽ sử dụng đưa vào branch tích hợp.
+
+## Chuyển đổi branches
+
+Để chuyển đổi branch làm việc thì sẽ thực hiện thao tác gọi là checkout. Khi thực hiện checkout, trước tiên nội dung của lần commit cuối cùng trong branch chuyển đến sẽ được mở ra trong work tree. Và commit đã tiến hành sau khi check out thì sẽ được thêm vào branch sau khi di chuyển đến.
+
+## HEAD
+
+HEAD là tên hiển thị phần đầu của branch đang sử dụng hiện tại. Mặc định là đang hiển thị phần đầu của master. Bằng việc di chuyển HEAD thì branch đang sử dụng sẽ được thay đổi.
+
+## Stash
+
+Khi những file được thêm mới hay nội dung thay đổi vẫn chưa commit vẫn còn lưu lại Index và Work tree, mà thực hiện checkout đến branch khác thì nội dung thay đổi đó sẽ di chuyển từ branch ban đầu đến branch chuyển đến.
+
+Tuy nhiên ở branch di chuyển đến, trường hợp có file giống như vậy đã được tiến hành thay đổi cái gì đó thì checkout sẽ thất bại. Khi xảy ra trường hợp này thì sẽ commit lại nội dung thay đổi 1 lần nữa hoặc là sử dụng stash để lưu tạm thời nội dung thay đổi, sau đó phải thực hiện commit.
+
+Stash là khu vực ghi lại tạm thời nội dung thay đổi của file. Bằng việc sử dụng stash, trong work tree và index, những thay đổi chưa được commit có thể lưu lại tạm thời.
+
+Những thay đổi lưu tạm này về sau có thể lấy ra và hiển thị trên branch ban đầu hay là phản ánh lên branch khác.
+
+<p align="center">
+	<img src="./img/stash.png" alt = "git-log">
+</P>
+
+## Merge
+
+Khi sử dụng merge, có thể tổng hợp nhiều luồng lịch sử.
+
+Ví dụ, có branch bugfix phân nhánh ra từ branch master như sơ đồ bên dưới.
+
+<p align="center">
+	<img src="./img/bugfix.png" alt = "git-log">
+</P>
+
+Khi merge branch bugfix này vào branch master, nếu trạng thái branch master không có gì thay đổi thì có thể thực hiện merge hết sức đơn giản. Vì lịch sử của branch bugfix sẽ bao gồm tất cả lịch sử của branch master, nên branch master chỉ có việc di chuyển đơn giản là có thể lấy được nội dung của branch bugfix. Và, người ta gọi merge như thế này là merge fast-forward (chuyển tiếp nhanh).
+
+<p align="center">
+	<img src="./img/Merge.png" alt = "git-log">
+</P>
+
+Nhưng, cũng có trường hợp lịch sử của branch master vẫn đang tiến triển sau khi phân branch bugfix. Trường hợp này thì cần thiết phải tổng hợp nội dung thay đổi của branch master và nội dung thay đổi của branch bugfix thành một.
+
+<p align="center">
+	<img src="./img/stepup.png" alt = "git-log">
+</P>
+
+Vì thế, merge commit đã lấy thay đổi của cả hai branch sẽ được tạo ra. Đầu branch master sẽ di chuyển đến commit đó.
+
+<p align="center">
+	<img src="./img/final.png" alt = "git-log">
+</P>
+
+Khi thực hiện merge, bằng việc chỉ định lựa chọn merge non fast-forward, cho dù là trường hợp có thể merge fast-forward thì vẫn có thể tạo ra merge commit mới rồi kết hợp lại.
+
+Khi tiến hành non fast-forward, vì branch vẫn còn nguyên như vậy, nên việc chỉ định công việc đã tiến hành tại branch đó sẽ trở nên đơn giản
+
+## Rebase
+
+Giống với ví dụ merge, sẽ có branch bugfix phân nhánh từ branch master như sơ đồ bên dưới.
+
+<p align="center">
+	<img src="./img/nhanh1.png" alt = "git-log">
+</P>
+
+Trường hợp sử dụng rebase ở đây rồi tiến hành tích hợp branch thì lịch sử sẽ giống như sơ đồ tiếp theo. Bây giờ, sẽ trình bày đơn giản trình tự rebase như thế nào.
+
+<p align="center">
+	<img src="./img/rebase.png" alt = "git-log">
+</P>
+
+Trước hết, khi rebase branch bugfix vào branch master, lịch sử branch bugfix sẽ được thay đổi đính kèm sau branch master. Cho nên, lịch sử sẽ thành 1 đường như trong sơ đồ.
+
+Khi này sẽ có trường hợp phát sinh xung đột tại commit di chuyển X và Y. Lúc đó tại từng commit cần thiết phải chỉnh sửa lại những chỗ phát sinh xung đột.
+
+<p align="center">
+	<img src="./img/nhanh2.png" alt = "git-log">
+</P>
+
+Nếu chỉ rebase không thôi thì vị trí đầu master vẫn cứ như vậy. Vì thế, merge branch bugfix từ branch master rồi di chuyển master đến phần đầu của bugfix.
+
+<p align="center">
+	<img src="./img/rebase2.png" alt = "git-log">
+</P>
+
+Cả merge và rebase đều là tích hợp lịch sử lại với nhau nhưng đặc trưng thì khác nhau.
+
+- **Merge**
+  Lịch sử nội dung thay đổi vẫn còn lại nhưng sẽ trở nên phức tạp hơn.
+
+- **Rebase**
+  Lịch sử sẽ trở nên đơn giản nhưng nội dung thay đổi từ commit ban đầu sẽ bị thay đổi. Cho nên cũng có trường hợp rơi vào tình trạng commit gốc không hoạt động.
+
+Merge và Rebase thì tùy theo phương châm áp dụng của nhóm mà chia ra sử dụng.
+
+Ví dụ, nếu áp dụng để hợp nhất hóa lịch sử, thì sẽ phân ra sử dụng như sau:
+
+- Trường hợp đưa code mới nhất của branch tích hợp vào branch chủ đề thì sử dụng rebase.
+- Trường hợp đưa branch chủ đề vào branch tích hợp, thì trước hết hãy rebase rồi merge.
+
+# Kỹ thuật phân và gộp Nhánh
