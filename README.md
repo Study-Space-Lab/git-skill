@@ -23,6 +23,16 @@
 	- [Lệnh git init](#lệnh-git-init)
 	- [Lệnh git init --bare](#lệnh-git-init---bare)
 	- [Lệnh git add](#lệnh-git-add)
+	- [Lệnh git status](#lệnh-git-status)
+	- [Lệnh git commit](#lệnh-git-commit)
+	- [Lệnh git reset](#lệnh-git-reset)
+	- [Lệnh git log](#lệnh-git-log)
+	- [Lệnh git diff](#lệnh-git-diff)
+	- [Lệnh git clone](#lệnh-git-clone)
+	- [Lệnh git checkout](#lệnh-git-checkout)
+	- [Lệnh git switch](#lệnh-git-switch)
+	- [Lệnh git restore](#lệnh-git-restore)
+- [Thực hành các lệnh Git cơ bản làm việc với Repository](#thực-hành-các-lệnh-git-cơ-bản-làm-việc-với-repository)
 
 # VCS và Git
 
@@ -534,3 +544,421 @@ git add .
 **Lưu ý:** Lệnh trên có loại trừ (không đưa vào staging) những file, thư mục liệt kê ra trong một file `.gitignore`.
 
 **Chú ý:** Sau khi đưa vào vùng staging, vùng này có snapshot thì bạn đã có thể sẵn sàng để thực hiện lệnh git commit để lưu sự thay đổi vào CSDL của Git
+
+## Lệnh git status
+
+Lệnh git status hiện thị thông tin khác nhau (do thêm mới, xóa đi, sửa đổi các file) giữa các file trong các trường hợp:
+
+`1` Khác nhau giữa các file trong vùng staging (chỉ mục) và commit tại con trỏ HEAD (Thường HEAD ở vị trí commit cuối): `thông tin này bạn có thể thực hiện lệnh commit để lưu staging vào dữ liệu Git`
+
+`2` Khác nhau giữa các file trong thư mục làm việc và trong staging: `bạn có thể chạy git add rồi commit`
+
+`3` Khác nhau giữa thư mục làm việc và những file chưa được giám sát bởi Git: `bạn có thể chạy git add rồi commit`
+
+Thông thường thì có thể thi hành ngay lệnh với cú pháp đơn giản sau để có thông tin trạng thái đầy đủ, chỉ tiết
+
+```powershell
+git status
+```
+
+<p align="center">
+	<img src="./img/git-status.png" alt = "git-add">
+</P>
+
+Nếu muốn hiện thị thông tin ngắn gọn hơn thì cho thêm tham số `-s`
+
+```powershell
+git status -s
+```
+
+Lúc này trước các file có sự thay đổi có thể có các ký tự tương ứng với các thông tin gồm:
+
+- _' '_ = unmodified (không đổi)
+- _M_ = modified (có sửa đổi)
+- _A_ = added (file mới thêm)
+- _D_ = deleted (file bị xóa)
+- _R_ = renamed (đổi tên file)
+- _C_ = copied (file copy từ file khác)
+- _U_ = updated but unmerged (đã cập nhật, nhưng chưa merge)
+
+<p align="center">
+	<img src="./img/git-status-s.png" alt = "git-add">
+</P>
+
+## Lệnh git commit
+
+Lệnh `git commit` thực hiện lưu vào CSDL Git toàn bộ nội dung chứa trong `index` (vùng staging) và kèm theo nó là một đoạn text thông tin (log) mô tả sự thay đổi của của `commit` này so với `commit` trước. Sau khi `commit` con trỏ `HEAD` tự động dịch chuyển đến `commit` này (Trong nhánh hiện tại).
+
+Khi thực hiện `commit` nếu bạn nhận ra ngay có sự nhầm lẫn nào đó bạn có thể khôi phục lại trạng thái cũ bằng lệnh `git reset` trình bày ở phần sau.
+
+**Thực hiện commit đơn giản**
+
+Lệnh commit cơ bản, đơn giản nhất là thực hiện với tham số -m để kèm dòng thông tin về commit
+
+```bash
+git commit -m "Ghi chú về commit"
+```
+
+Lệnh trên tạo ra một commit với nội dung lấy từ vùng staging, một điểm trong lịch sử commit được tạo ra với thông tin là dòng thông tin nhập vào, sau này bạn có thể xem lại lịch sử này bằng lệnh git log
+
+**Thực hiện commit với tham số -a**
+
+Khi cho tham số -a thì nó tương đương thực hiện lệnh git add để đưa các file đang được giám sát có sự thay đổi vào staging rồi tự động chạy git commit
+
+```bash
+git commit -a -m "Ghi chú về commit"
+```
+
+**Thay thế commit cuối bằng tham số --amend**
+
+Nếu commit đã được tạo ra nhưng chưa thực hiện push lên remote (khi có làm việc với Remote Repo - nói ở các phần sau) thì bạn có thể tạo ra commit mới thay thế cho commit cuối cùng đó. Dùng trong trường hợp không muốn tạo ra nhiều commit trong lịch sử commit thì cho vào lệnh tham số --amend
+
+```bash
+git commit --amend -m "Thông tin về commit"
+```
+
+## Lệnh git reset
+
+Khi đã thực hiện commit, commit đó chưa public (chưa đẩy lên Remote Repo bằng lệnh git push) thì bạn có thể hủy (undo) commit đó với hai trường hợp bằng lệnh `git reset` như sau:
+
+**git reset với tham số --soft**
+
+Trường hợp này sẽ hủy commit cuối, con trỏ HEAD sẽ chuyển về commit cha. Đồng thời những thay đổi của commit cuối được chuyển vào vùng staging nhằm để có cơ hội commit lại hoặc sửa đổi, cú pháp lệnh như sau:
+
+```bash
+git reset --soft HEAD~1
+```
+
+**git reset với tham số --hard**
+
+Khi dùng tham số `--hard` thì kết quả giống với dùng tham số `--soft`, chỉ có một khác biết là nội dung thay đổi của commit cuối không đưa đưa vào staging mà bị hủy luôn. Trường hợp này dùng khi bạn quyết định hủy hoàn toàn commit cuối
+
+```bash
+git reset --hard HEAD~1
+```
+
+<p align="center">
+	<img src="./img/git-reset.png" alt = "git-reset">
+</P>
+
+**Một vài trường hợp dùng git reset khác**
+
+**Hủy git add**
+
+Nếu bạn đã dùng lệnh git add để cập nhật thay đổi vào vùng staging, bạn có thể hủy thao tác này bằng cách thực hiện lệnh:
+
+```bash
+git reset
+```
+
+**Hủy đưa một file vào staging**
+
+Nếu muốn hủy một file nào đó trong vùng staging chứ không phải toàn bộ thì dùng lệnh
+
+```bash
+git reset -- filename
+```
+
+## Lệnh git log
+
+Lệnh `git log` giúp bạn xem lại thông tin lịch sự commit, nhằm giám sát sự thay đổi của dự án. Lệnh `git log` có nhiều tham số để xuất ra, định dạng các thông tin hiện thị theo cách mong muốn. Bạn có thể định dạng cách các thông tin mỗi commit được in ra khi xem, cũng như có thể lọc thông tin nào đó.
+
+Mặc đinh thi hành `git log` nó liệt kê các commit theo thứ tự từ mới nhất đến cũ nhất, mỗi commit có các thông tin gồm: mã hash của commit, dòng thông báo, người tạo commit và ngày tạo commit
+
+```bash
+git log
+```
+
+<p align="center">
+	<img src="./img/git-log.png" alt = "git-log">
+</P>
+
+Khi số lượng log nhiều, nó hiện thị trước một trang log, sau đó có dấu nhắc chờ lệnh để bạn điều hướng, tìm kiếm ... Để có trợ giúp về các lệnh này hãy nhấn h tại dấu nhắc lệnh
+
+Một số phím chức năng bạn có thể nhập đề điều hướng và tìm kiếm trong log như:
+
+- `return` - dòng tiếp theo
+- `w` - trang tiếp
+- `spacebar` - trang trước
+- `q` - thoát
+- `?pattern` - tìm kiếm, với pattern là mẫu tìm kiếm (keyword)
+- `/pattern` - giống ?pattern
+- `n` - đến vị trí tìm kiếm phía dưới
+- `N` - đến kết quả tìm kiếm phía trước
+
+**Một số thiết lập hay dùng với git log**
+
+Nếu chỉ muốn hiện thị một số commit log, ví dụ hiện thị log của 2 commit cuối thì cho thêm `-2` vào lệnh
+
+```bash
+git log -2
+```
+
+Nếu muốn hiện thị chi tiết các thay đổi của từng commit thì thêm vào tham số `-p`
+
+```bash
+git log -p -2
+```
+
+Nếu hiện thị thống kế gọn hơn về sự thay đổi thì dùng tham số `--stat`, hoặc dạng ngắn gọn hơn là `--shortstat`
+
+```bash
+git log --stat -5
+```
+
+Định dạng thông tin chung về commit (mã hash, dòng thông tin) trên một dòng thì dùng tham số `--oneline`
+
+```bash
+git log --oneline
+git log --stat -10 --oneline
+```
+
+**Lọc kết quả với git log**
+
+Lọc theo ngày bạn có thể dùng tham số `--after="year-month-day"` hoặc `--before="year-month-day"` hoặc dùng cả hai để chỉ ra khoảng ngày. Ví dụ: hiện thị các log từ ngày 16/6/2019 đến ngày 18/6/2021
+
+```bash
+git log --after="2021-6-16" --before="2021-6-18"
+```
+
+Lọc theo người commit dùng tham số `--author="tác giả"`, có thể kết hợp nhiều người bằng ký hiệu `\|`
+
+```bash
+git log --oneline --author="FoxMinChan"
+```
+
+Lọc theo thông tin ghi chú về commit sử dụng thiết lập `--grep="keyword ..."`
+
+```bash
+git log --oneline --grep="init"
+```
+
+Lọc các commit liên quan đến file cụ thể, sử dụng thiết lập `--` rồi liệt kê các file
+
+```bash
+git log --oneline -- src/index.php
+```
+
+Lọc theo nội dung cập nhật sử dụng tham số `-S"nội dung tìm"`
+
+```bash
+git log --oneline --shortstat -S"sendmail"
+```
+
+**Lọc các commit bình thường** (tham số `--no-merges`) và các commit do gộp nhánh (tham số `--merges`)
+
+```bassh
+git log --merges
+```
+
+**Tự định dạng hiện thị**
+
+Bạn có thể tùy chọn hiện thị dòng thông tin với tham số `--pretty="format"`, trong đó chuỗi format là định dạng thông tin sẽ hiện thị ra cho từng commit, một số dữ liệu theo định dạng đó là:
+
+- `%H` mã hash đầy đủ của commit
+- `%h` mã hash ngắn gọn (7 ký tự đầu của hash đầy đủ)
+- `%an` tên người commit (định dạng theo `--date`, ví dụ `--date="shortdate"`)
+- `%s` dòng thông tin commit
+
+```bash
+git log --pretty=format:"%h - %ad  %s" --date="short"
+```
+
+**Hiện thị log commit dạng đồ thị**
+
+Bạn có thể xem lịch sự commit một cách trực quan của một nhánh, nhất là nhánh này trong lịch sử của nó có nhiều lần gộp nhánh
+
+```bash
+git log --graph --pretty="%h %ad %s" --date="short"
+```
+
+## Lệnh git diff
+
+Lệnh `git diff` hiện thị thông tin thay đổi giữa thư mục làm việc và vùng index (staging) hoặc với commit cũ, thông tin thay đổi giữa index(staging) và commit, thông tin thay đổi giữa hai nhánh ...
+
+Mặc định thi hành lệnh như sau:
+
+```bash
+git diff
+```
+
+Nó hiện thị thông tin tùy ngữ cảnh như sau:
+
+- Thông tin khác nhau giữa thư mục làm việc và commit cuối khi mà vùng index (staging) không có dữ liệu gì
+- Thông tin thay đổi giữa index và commit cuối nếu vùng index có dữ liệu
+
+**Kiểm tra sự thay đổi thư mục làm việc**
+
+Khi có sự thay đổi của thư mục làm việc mà chưa chỉ mục, thì có thể xem sự thay đổi của nó với commit cuối
+
+```bash
+git diff
+```
+
+**Kiểm tra sự thay đổi của index (staging) với commit cuối**
+
+```bash
+git diff --staged
+```
+
+**Kiểm tra thay đổi giữa hai commit**
+
+```bash
+git diff hash-commit1 hash-commit2
+```
+
+**Kiểm tra sự thay đổi của hai nhánh**
+
+```bash
+git diff branch1 branch2
+```
+
+## Lệnh git clone
+
+Lệnh `git clone` để sao chep, copy một Git Repo (kho chứa dự án Git) về máy đang local. Một số trường hợp sử dụng git clone như:
+
+- Copy một Repo từ máy Remote về Local
+- Copy một Repo từ thư mục này sang một thư mục khác
+- Copy một Repo từ một Url (https) ví dụ GitHub
+
+Lưu ý, khi copy Repo bình thường thì nó tự động tạo ra kết nối đến remote Repo, để có thể Push, kết nối này có tên mặc định `origin`, sau khi copy thì có thể kiểm tra bằng:
+
+```bash
+git remote -v
+```
+
+**Copy Repo từ thư mục này sang thư mục khác**
+
+Trên máy của bạn có một Git Repo ở đường dẫn path-git, bạn có thể copy sang vị trí khác bằng lệnh:
+
+```bash
+git clone path-git
+```
+
+**Có thể chỉ rõ thư mục cần copy về thay vì tại thư mục hiện tại**
+
+```bash
+git clone path-git path-des
+```
+
+**Copy Repo từ server về bằng giao thức ssh**
+
+Vị dụ Server có kết nối ssh: user@host, trên đó lưu một Repo ở đường dẫn `/path/to/repo`, thì có thể copy về bằng lệnh
+
+```bash
+git clone user@host:/path/to/repo.git
+```
+
+**Copy Repo bằng giao thức https**
+
+Nhiều dịch vụ Git cung cấp kết nối bằng giao thức (https) ví dụ GitHub, GitLab thì copy về bằng lệnh:
+
+```bash
+git clone url-repo
+```
+
+Với url-repo là địa chỉ URL ví dụ: https://github.com/FoxMinChan/Powershell_Themes.git
+
+Mặc định nó sẽ sao chép về nhánh hoạt động, để xem tất cả các nhánh có trên Remote dùng lệnh
+
+```bash
+git branch --remote
+```
+
+Để có thể lấy các nhánh khác nữa bạn cần chạy lệnh `git fetch` và `git checkout` từng nhánh muốn lấy
+
+## Lệnh git checkout
+
+Lệnh `git checkout` được dùng để chuyển nhánh hoặc để phục hồi file trong thư mục làm việc từ một commit trước đây ...
+
+Từ phiên bản git 2.23 còn có thể 2 lệnh với chức năng tương ứng là: `git switch` và `git restore`
+
+**Chuyển nhánh**
+
+Giả sử đang ở nhánh nào đó, muốn chuyển sang nhánh master thì thực hiện lệnh:
+
+```bash
+git checkout master
+```
+
+Lúc này nhánh master hoạt động, và thư mục làm việc là các file tương ứng với nhánh này
+
+**Phục hồi file từ phiên bản cũ**
+
+Giả sử có file index.html, muốn phục hồi nó về phiên bản ở commit có mã hash là HASH, thì thực hiện:
+
+```bash
+git checkout HASH index.html
+```
+
+Nếu bạn muốn phục hồi nội dung từ index (staging nếu có, nếu không từ commit cuối) thì đơn giản là
+
+```bash
+git checkout index.html
+```
+
+Phục hồi nhiều file, ví dụ \*.html từ index (staging nếu có, nếu không từ commit cuối)
+
+```bash
+git checkout -- *.html
+```
+
+Có thể thực hiện với tất cả các file bằng
+
+```bash
+git checkout -- .
+```
+
+Khi bạn trở về hẳn một commit có mã HASH nào đó bằng lệnh:
+
+```bash
+git checkout HASH
+```
+
+Thì lúc này con trỏ `HEAD` sẽ chuyển đến commit này, và Git ở chế độ head detached, bạn làm việc trên một nhánh tạm thời
+
+Nếu có thực hiện các commit trên nhánh này và cần lưu lại thì cuối cùng tạo nhánh mới bằng lệnh
+
+```bash
+git switch -c ten-nhanh-moi
+```
+
+## Lệnh git switch
+
+Lệnh này dùng để chuyển nhánh và có thể tạo nhánh mới, ví dụ chuyển về nhánh master
+
+```bash
+git switch master
+```
+
+Tạo nhánh mới, kích hoạt nhánh bắt đầu từ một commit có mã HASH
+
+```bash
+git switch -c ten-nhanh HASH
+```
+
+Hoặc tạo nhanh từ commit cuối
+
+```bash
+git switch -c ten-nhanh
+```
+
+Chuyển về làm việc tại nhánh tạm thời bắt đầu từ commit có mã HASH
+
+```bash
+git switch --detach HASH
+```
+
+## Lệnh git restore
+
+Lệnh `git restore` để phục hồi các file của thư mục làm việc.
+
+Để phục hồi tất cả các file dùng lệnh:
+
+```bash
+git restore .
+```
+
+Cách sử dụng giống như `git checkout` cho trường hợp phục hồi
+
+# Thực hành các lệnh Git cơ bản làm việc với Repository
