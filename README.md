@@ -17,8 +17,12 @@
 	- [Tải Git](#tải-git)
 	- [Cài đặt Git](#cài-đặt-git)
 	- [Cài đặt Git trên MacOS và Ubuntu](#cài-đặt-git-trên-macos-và-ubuntu)
+	- [Cấu hình Git lần đầu](#cấu-hình-git-lần-đầu)
 - [Trạng thái của Git](#trạng-thái-của-git)
-- [Lệnh cơ bản](#lệnh-cơ-bản)
+- [Những câu lệnh Git cơ bản](#những-câu-lệnh-git-cơ-bản)
+	- [Lệnh git init](#lệnh-git-init)
+	- [Lệnh git init --bare](#lệnh-git-init---bare)
+	- [Lệnh git add](#lệnh-git-add)
 
 # VCS và Git
 
@@ -336,6 +340,80 @@ Lệnh trên sẽ hiển thị phiên bản đã được cài đặt trên hệ
 git version 2.32.0
 ```
 
+## Cấu hình Git lần đầu
+
+Bây giờ Git đã có trên hệ thống, bạn muốn tuỳ biến một số lựa chọn cho môi trường Git của bạn. Bạn chỉ phải thực hiện các bước này một lần duy nhất; chúng sẽ được ghi nhớ qua các lần cập nhật. Bạn cũng có thể thay đổi chúng bất kỳ lúc nào bằng cách chạy lại các lệnh.
+
+Git cung cấp sẵn git config cho phép bạn xem hoặc chỉnh sửa các biến cấu hình để quản lý toàn bộ các khía cạnh của Git như giao diện hay hoạt động. Các biến này có thể được lưu ở ba vị trí khác nhau:
+
+- `/etc/gitconfig` : Chứa giá trị cho tất cả người dùng và kho chứa trên hệ thống. Nếu bạn sử dụng `--system` khi chạy `git config`, thao tác đọc và ghi sẽ được thực hiện trên tập tin này.
+- `~/.gitconfig` : Riêng biệt cho tài khoản của bạn. Bạn có thể chỉ định Git đọc và ghi trên tập tin này bằng cách sử dụng `--global`.
+- Tập tin config trong thư mục git `(.git/config)` của bất kỳ kho chứa nào mà bạn đang sử dụng: Chỉ áp dụng riêng cho một kho chứa. Mỗi cấp sẽ ghi đè các giá trị của cấp trước nó, vì thế các giá trị trong `.git/config` sẽ "ghi đè" các giá trị trong `/etc/gitconfig`.
+- Trên Windows, Git sử dụng tập tin `.gitconfig` trong thư mục `$HOME` (`%USERPROFILE% trên môi trường Windows`), cụ thể hơn đó là `C:\Documents` and `Settings\$USER` hoặc `C:\Users\$USER`, tuỳ thuộc vào phiên bản Windows đang sử dụng (`$USER là %USERNAME%` trên môi trường Windows). Nó cũng tìm kiếm tập tin `/etc/gitconfig`, mặc dù nó đã được cấu hình sẵn chỉ đến thư mục gốc của MSys, có thể là một thư mục bất kỳ, nơi bạn chọn khi cài đặt.
+
+**Thiết lập danh Tính Của Bạn**
+
+Việc đầu tiên bạn nên làm khi cấu hình Git là chỉ định tên tài khoản và địa chỉ e-mail. Điều này rất quan trọng vì mỗi Git sẽ sử dụng chúng cho mỗi lần commit, những thông tin này được gắn bất di bất dịch vào các commit:
+
+```bash
+$ git config --global user.name "FoxMinChan"
+$ git config --global user.email nguyenxuannhan407@gmail.com
+```
+
+Vì chỉ phải làm việc này một lần duy nhất nên như sử dụng `--global`, vì Git sẽ sử dụng các thông tin đó cho tất cả những gì bạn làm trên hệ thống. Nếu bạn muốn sử dụng tên và địa chỉ e-mail khác cho một dự án riêng biệt nào đó, bạn có thể chạy lại lệnh trên không sử dụng `--global `trên dự án đó.
+
+**Trình Soạn Thảo**
+
+Bây giờ danh tính của bạn đã được cấu hình xong, bạn có thể lựa chọn trình soạn thảo mặc định sử dụng để soạn thảo các dòng lệnh. Mặc định, Git sử dụng trình soạn thảo mặc địch của hệ điều hành, thường là Vi hoặc Vim. Nếu bạn muốn sử dụng một trình soạn thảo khác, như Emacs, bạn có thể sửa như sau:
+
+```bash
+$ git config --global core.editor emacs
+```
+
+Ở phần cài đặt Git, mình đã set Visual Studio Code làm trình soạn thảo mặc định cho nên trình soạn thảo mặc đinh của mình là Visual Studio Code.
+
+**Công Cụ So Sánh Thay Đổi**
+
+Một lựa chọn hữu ích khác mà bạn có thể muốn thay đổi đó là chương trình so sánh sự thay đổi để giải quyết các trường hợp xung đột nội dung. Ví dụ bạn muốn sử dụng vimdiff:
+
+```bash
+$ git config --global merge.tool vimdiff
+```
+
+Git chấp nhận kdiff3, tkdiff, meld, xxdiff, emerge, vimdiff, gvimdiff, ecmerge, và opendiff là các công cụ trộn/sát nhập (merge) hợp lệ. Bạn cũng có thể sử dụng một công cụ yêu thích khác.
+
+**Kiểm Tra Cấu Hình**
+
+Nếu như bạn muốn kiểm tra các cấu hình cài đặt, bạn có thể sử dụng lệnh `git config --list` để liệt kê tất cả các cài đặt của Git:
+
+```powershell
+diff.astextplain.
+textconv=astextplain
+filter.lfs.clean=git-lfs clean -- %f
+filter.lfs.smudge=git-lfs smudge -- %f
+filter.lfs.process=git-lfs filter-process
+filter.lfs.required=true
+http.sslbackend=openssl
+http.sslcainfo=C:/Program Files/Git/mingw64/ssl/certs/ca-bundle.crt
+core.autocrlf=true
+core.fscache=true
+core.symlinks=true
+pull.rebase=false
+credential.helper=manager-core
+credential.https://dev.azure.com.usehttppath=true
+init.defaultbranch=master
+core.editor="C:\Users\Nhan Nguyen\AppData\Local\Programs\Microsoft VS Code\Code.exe" --wait
+user.email=nguyenxuannhan407@gmail.com
+user.name=FoxMinChan
+```
+
+Bạn cũng có thể kiểm tra giá trị của một từ khoá riêng biệt nào đó bằng cách sử dụng `git config {key}`:
+
+```powershell
+git config user.name
+FoxMinChan
+```
+
 # Trạng thái của Git
 
 Mỗi tập tin trong Git được quản lý dựa trên ba trạng thái đó là **committed**, **modified**, và **staged**. Trong đó:
@@ -377,4 +455,82 @@ $ git add demo.txt
 $ git checkout task1
 ```
 
-# Lệnh cơ bản
+# Những câu lệnh Git cơ bản
+
+## Lệnh git init
+
+Lệnh git init được sử dưng để tạo, khởi tạo một kho chứa **Git** mới (Git Repo) ở local. Khi đang trong thư mục dự án chạy lệnh git init nó sẽ tạo ra một thư mục con (ẩn) tên .git, thư mục này chứa tất cả thông tin mô tả cho kho chứa dự án (Repo) mới - những thông tin này gọi là metadata gồm các thư mục như `objects`, `refs`, ... Có một file tên `HEAD` cũng được tạo ra - nó trỏ đến `commit` hiện tại.
+
+Lệnh `git init` nhanh chóng tạo ra quản lý phiên bản của dự án dạng `none bare` mà bạn không cần có ngay một server để lưu Repo từ xa, không yêu cầu bạn phải nạp file dữ liệu nào. Tất cả phải làm là vào thư mục dự án cần khởi tạo và thi hành lệnh sau để khởi tạo:
+
+```bash
+git init
+```
+
+Sau lệnh này bạn có một Repo ở local và bắt đầu thực thi được các lệnh khác của Git.
+
+## Lệnh git init --bare
+
+Khi bạn cần tạo ra một Repo Git mà nó chỉ có chức năng lưu trữ - không có thư mục làm việc thì thực hiện lệnh:
+
+```bash
+git init --bare
+```
+
+Loại dự án Git này thì bạn có thể truy cập, lưu trữ, nhưng không soạn thảo, sửa file, thực hiện commit trực tiếp tại dự án. Thường tạo loại dự án này để lưu trữ như là Remote Repo (_Tạo Repo git trên Server_), từ đó lấy về Local (_lệnh git clone_), và để local đẩy dữ liệu Git lên
+
+<p align="center">
+	<img src="./img/git_init.png" alt = "git-init">
+</P>
+
+## Lệnh git add
+
+Lệnh `git add` sử dụng để **đánh chỉ mục (index)** các nội dung mới, mới cập nhật trong **thư mục làm việc**, nó chuẩn bị nội dung sắp xếp cho lần `commit` tiếp theo.
+
+Khái niệm **đánh chỉ mục** ở trên có nghĩa là lưu lại **ảnh chụp** (snapshot) thông tin thay đổi của thư mục làm việc so với lần commit trước (hoặc so với snapshot chưa commit), snapshot lưu ở khu vực gọi là **staging** (sắp xếp, chuẩn bị)
+
+Bạn có thể thực hiện lệnh `git add` nhiều lần để tạo tạo ra một snapshot cuối cùng trước khi thực hiện commit.
+
+Hình ảnh sau cho biết những ảnh hưởng của lệnh `git add`:
+
+<p align="center">
+	<img src="./img/git-add.png" alt = "git-add">
+</P>
+
+Lệnh git add có vài cách thực hiện với những tham số khác nhau:
+
+**Đưa vào vùng staging file, thư mục cụ thể.**
+
+Bạn thực hiện lệnh theo cú pháp:
+
+```bash
+$ git add file1 file2 dir1 dir2 ...
+```
+
+Ví dụ:
+
+```bash
+# Đưa vào staging file hutech.txt và file cntt.txt
+git add hutech.txt cntt.txt
+
+# Đưa thư mục tphcm (và file, thư mục con) vào staging
+git add tphcm
+```
+
+Lệnh git add sẽ đưa file, thư mục vào staging - nếu file/thư mục chưa từng được giám sát bởi git nó sẽ bắt đầu giám sát và tạo snapshot là toàn bộ file/thư mục mới. Nếu đã từng giám sát - thì snapshot là nội dung thay đổi so với commit trước.
+
+**Đưa vào vùng staging toàn bộ thư mục làm việc**
+
+Trường hợp dùng phổ biến là đưa toàn bộ thư mục làm việc vào giám sát, và tạo snapshot trong vùng staging cho chúng thì dùng cú pháp lệnh:
+
+```bash
+git add --all
+# Hoặc
+git add -A
+# Hoặc add [thư mục hiện tại]
+git add .
+```
+
+**Lưu ý:** Lệnh trên có loại trừ (không đưa vào staging) những file, thư mục liệt kê ra trong một file `.gitignore`.
+
+**Chú ý:** Sau khi đưa vào vùng staging, vùng này có snapshot thì bạn đã có thể sẵn sàng để thực hiện lệnh git commit để lưu sự thay đổi vào CSDL của Git
