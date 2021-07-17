@@ -89,6 +89,11 @@
 	- [User Permissions](#user-permissions)
 	- [Bảo vệ Branches](#bảo-vệ-branches)
 	- [Khả năng hiển thị Project](#khả-năng-hiển-thị-project)
+- [Tag trong Git](#tag-trong-git)
+	- [Tag trong Git](#tag-trong-git-1)
+	- [Một số lệnh thông dụng với tag trong Git.](#một-số-lệnh-thông-dụng-với-tag-trong-git)
+	- [Tạo release (phiên bản phát hành) trên GitHub](#tạo-release-phiên-bản-phát-hành-trên-github)
+- [Credit](#credit)
 
 # VCS và Git
 
@@ -1861,3 +1866,136 @@ GitLab mang đến 3 kiểu protect là private, internal và public.
 **Private** dùng để chỉ những dự án chỉ hiển thị với người được thêm vào dự án. Các quyền của người dùng được mời sẽ phụ thuộc vào phân quyền do người quản trị quyết định khi thực hiện mời.
 
 **Internal** dùng để giới hạn những người có tài khoản trong hệ thống GitLab. Những người dùng đã đăng nhập sẽ được phân quyền tự động là Guest.
+
+# Tag trong Git
+
+## Tag trong Git
+
+**Tag** là chức năng đặt tên một cách đơn giản của Git, nó cho phép ta xác định một cách rõ ràng các phiên bản mã nguồn (code) của dự án. Ta có thể coi tag như một **branch** không thay đổi được. Một khi nó được tạo (gắn với 1 commit cụ thể) thì ta không thể thay đổi lịch sử commit ấy được nữa.
+
+Có 2 loại tag là **annotated** và **lightweight**.
+
+**Lightweight** tag thực chất chỉ là đánh dấu (bookmark) cho một commit, vì chúng chỉ lưu trữ hàm băm (hash) của commit mà chúng tham chiếu. Chúng được tạo chỉ gồm tên mà không có các tùy chọn `-a`, `-s` hoặc `-m` và không chứa bất kỳ thông tin bổ sung nào.
+
+Để tạo một **lightweight** tag có tên "v1.0.0" cho Head commit hiện tại ta dùng lệnh sau,
+
+```bash
+git tag v1.0.0
+```
+
+**Annotated** tag thì mạnh hơn. Ngoài tên nó còn có thể lưu trữ dữ liệu bổ sung như Tên tác giả (-s), tin nhắn (-m: message), và ngày dưới dạng các đối tượng đầy đủ trong cơ sở dữ liệu Git. Tất cả thông tin ấy quan trọng cho việc release dự án của ta.
+
+Lệnh tạo **annotated** tag có tên "v1.0.0" với thông điệp release như sau (chú thích -a nghĩa là anotated, -m nghĩa là message),
+
+```bash
+$ git tag -a v1.0.0 -m "Releasing version v1.0.0"
+```
+
+## Một số lệnh thông dụng với tag trong Git.
+
+**Liệt kê danh sách tag Liệt kê -n tag đầu của toàn bộ danh sách tag**:
+
+```bash
+git tag -l -n3
+v1.0            Release version 1.0
+v1.1            Release version 1.1
+v1.2            Release version 1.2
+```
+
+**Thông tin chi tiết tag**:
+
+```bash
+$ git show v1.0
+tag v1.0
+Tagger: Kolosek
+Date:   Fri May 11 10:45:33 2018 +0100
+
+Release version 1.0
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iMTvhAA...
+-----END PGP SIGNATURE-----
+
+commit 7d44b6bb8abb96dee33f32610f56441496d77e8a
+Author: Kolosek
+Date:   Fri May 11 9:50:13 2018 +0100
+
+    Edited the Login form
+...
+```
+
+Lệnh xem chi tiết tag (ở đây là _anotated tag_) liệt kê tên tác giả, ngày tạo, thông điệp (_message_), chữ kí và thông tin commit mà nó trỏ đến.
+
+- Sửa tag
+
+Nếu ta tạo một tag mới trùng tên (ví dụ 'v1.0') với tag đã có thì Git sẽ bắn ngoại lệ "_fatal: tag 'v1.0' already exists_".
+
+Thay vì xóa tag đó và tạo lại tag khác, đơn giản ta thay thế nó trong khi vẫn giữ mô tả tag. Chọn commit_id trong lịch sử commit của ta mà ta muốn tag (cũ) dời đến và thêm tùy chọn `-f` hay `-force` vào lệnh git của ta.
+
+```bash
+git tag -a -f <tag_identifier> <commit_id>
+```
+
+- Xóa tag
+
+Nói chung thì ta không có lý do gì phải xóa tag vì tag không chiếm nhiều tài nguyên. Chừ trường hợp ta đã tạo tag cho một commit sai, khi ấy mới cần xóa tag.
+
+```bash
+git tag -d <tag_identifier>
+```
+
+Trường hợp tag đó đã được push khi đó ta cần xóa nó từ remote repository như sau.
+
+```bash
+git push origin :v1.0
+```
+
+**Công khai (public) tag**:
+
+Giống như commit, khi tag được tạo ra nó luôn ở local repository. Nó không thể tự động push lên remote repository mà ta phải push nó.
+
+Đẩy toàn bộ tag ở local lên remote repository.
+
+```bash
+git push --tags
+```
+
+Đẩy riêng một tag lên remote repo.
+
+```bash
+git push <location> <tag_identifier>
+git push origin v1.0
+```
+
+## Tạo release (phiên bản phát hành) trên GitHub
+
+Mục đích tạo **release** là để chia sẻ đóng gói ứng dụng, cùng các ghi chú phát hành và các link tới các file tài liệu ứng dụng cho mọi người trong team, công ty có sửa dụng.
+
+Release dựa trên Git tag, nó đánh dấu một điểm cụ thể ở lịch sử repository của ta. Các release được sắp xếp theo thời gian chúng được tạo trên GitHub.
+
+Các bước tạo release.
+
+**B1**: Di chuyển đến trang chủ (main page) của repository trên GitHub mà ta cần tạo release.
+
+**B2**: Chọn release\* - nút link ngay dưới tên repositry.
+
+**B3**: Click chọn Draft a new release.
+
+**B4**: Nhập phiên bản cho release của ta. Phiên bản dựa trên Git tag.
+
+**B5**: Ngay ô bên phải chọn branch của dự án cần release (drop-down-list)
+
+**B6**: Nhập tiêu đề và nội dung cho release này.
+
+**B7**: Bạn có thể kéo thả các file tài liệu liên quan cho release phiên bản này lên binaries box.
+
+**B8**: Nếu release là không ổn định, chưa chính thức thì ta cần thông báo cho mọi người (liên quan) biết bằng cách chọn **This is a pre-release**.
+
+**B9**: Nếu bạn sẵn sàng công khai bản release này thì click chọn **Publish release** , bằng không thì chọn Save draft.
+
+# Credit
+
+**Tổng hợp nội dung bởi**: [**Nhân Nguyễn**](https://www.facebook.com/FoxMinChan/)
+
+**Nguồn:** Tổng hợp từ nhiều nguồn
