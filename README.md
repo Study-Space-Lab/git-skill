@@ -13,6 +13,7 @@
 	- [Cơ chế hoạt động?](#cơ-chế-hoạt-động)
 	- [Dữ liệu lưu trữ trong Git đảm bảo tính toàn vẹn](#dữ-liệu-lưu-trữ-trong-git-đảm-bảo-tính-toàn-vẹn)
 	- [Git có lợi ích gì?](#git-có-lợi-ích-gì)
+	- [Thuật ngữ cơ bản về Git](#thuật-ngữ-cơ-bản-về-git)
 - [Cài đặt và cấu hình Git](#cài-đặt-và-cấu-hình-git)
 	- [Tải Git](#tải-git)
 	- [Cài đặt Git](#cài-đặt-git)
@@ -49,7 +50,45 @@
 	- [Stash](#stash)
 	- [Merge](#merge)
 	- [Rebase](#rebase)
-- [Kỹ thuật phân và gộp Nhánh](#kỹ-thuật-phân-và-gộp-nhánh)
+	- [Lệnh làm việc với nhánh](#lệnh-làm-việc-với-nhánh)
+- [Làm việc với Remote Respository](#làm-việc-với-remote-respository)
+	- [Remote Repository là gì?](#remote-repository-là-gì)
+	- [Remote repository và local repository](#remote-repository-và-local-repository)
+	- [Cài đặt để có Git Server](#cài-đặt-để-có-git-server)
+	- [Cài đặt OpenSSH trên Server](#cài-đặt-openssh-trên-server)
+	- [Tạo Remote Repository](#tạo-remote-repository)
+	- [Thiết lập để làm việc với Remote Repository](#thiết-lập-để-làm-việc-với-remote-repository)
+- [Lệnh cơ bản làm việc với Remote Repository](#lệnh-cơ-bản-làm-việc-với-remote-repository)
+	- [Lệnh git fetch](#lệnh-git-fetch)
+	- [Lệnh git pull](#lệnh-git-pull)
+	- [Lệnh git push](#lệnh-git-push)
+	- [Lệnh Git remote](#lệnh-git-remote)
+	- [Sự khác nhau của git fetch và git pull](#sự-khác-nhau-của-git-fetch-và-git-pull)
+- [GitHub](#github)
+	- [Github là gì?](#github-là-gì)
+	- [Cách làm việc trên GitHub](#cách-làm-việc-trên-github)
+	- [Thuật ngữ cơ bản về GitHub](#thuật-ngữ-cơ-bản-về-github)
+	- [Lịch sử của GitHub](#lịch-sử-của-github)
+	- [Lợi ích của Github đối với lập trình viên](#lợi-ích-của-github-đối-với-lập-trình-viên)
+	- [Github là một kho tài nguyên tuyệt vời](#github-là-một-kho-tài-nguyên-tuyệt-vời)
+	- [Github Action](#github-action)
+	- [Github Package Registry](#github-package-registry)
+- [GitLab và Kiến trúc Gitlab](#gitlab-và-kiến-trúc-gitlab)
+	- [GitLab là gì?](#gitlab-là-gì)
+	- [Phiên bản Gitlab](#phiên-bản-gitlab)
+	- [Tại sao nên dùng GitLab?](#tại-sao-nên-dùng-gitlab)
+	- [Protected branches:](#protected-branches)
+	- [Tầng vật lý của GitLab](#tầng-vật-lý-của-gitlab)
+	- [System layout](#system-layout)
+	- [Components](#components)
+	- [Cách cài đặt GitLab trên Windows](#cách-cài-đặt-gitlab-trên-windows)
+	- [Cách cài đặt GitLab trên Linux](#cách-cài-đặt-gitlab-trên-linux)
+	- [Lưu ý khi sử dụng GitLab](#lưu-ý-khi-sử-dụng-gitlab)
+	- [Thêm người dùng](#thêm-người-dùng)
+	- [Tạo nhóm](#tạo-nhóm)
+	- [User Permissions](#user-permissions)
+	- [Bảo vệ Branches](#bảo-vệ-branches)
+	- [Khả năng hiển thị Project](#khả-năng-hiển-thị-project)
 
 # VCS và Git
 
@@ -157,6 +196,22 @@ Cuối cùng, đôi khi một số dự án đang được chạy song song liê
 - Sễ dàng kết hợp các phân nhánh (branch), có thể giúp quy trình làm việc code theo nhóm đơn giản hơn rất nhiều.
 - Chỉ cần clone mã nguồn từ kho chứa hoặc clone một phiên bản thay đổi nào đó từ kho chứa, hoặc một nhánh nào đó từ kho chứa là bạn có thể làm việc ở mọi lúc mọi nơi.
 - Deployment sản phẩm của bạn một cách không thể nào dễ dàng hơn.
+
+## Thuật ngữ cơ bản về Git
+
+Dưới đây là thuật ngữ cơ bản của **Git**:
+
+- **repository**: Nơi lưu trữ dữ liệu. **Git** quản lý dữ liệu trong đơn vị lưu trữ này. Lịch sử sửa đổi cũng được lưu lại.
+- **remote repository**: Một kho lưu trữ trên máy chủ. Lưu trên máy chủ và dùng để chia sẻ.
+- **local repository**: Một kho lưu trữ local.
+- **clone**: Để nhân đôi một kho lưu trữ từ xa. Lịch sử sửa đổi cũng được nhân đôi.
+- **branch**: Quản lý một loạt các sửa đổi bằng cách phân nhánh từ dòng chính thành một nhánh riêng. Sửa đổi trên một nhánh này sẽ không bị ảnh hưởng bởi các nhánh khác, vì vậy bạn có thể cùng một lúc phát triển nhiều cái trong cùng một kho lưu trữ.
+- **checkout**: Di chuyển đến một nhánh khác và đặt thư mục làm việc của bạn ở bất kỳ trạng thái `commit` nào.
+- **commit**: Để phản ánh các nội dung sửa đổi trong kho lưu trữ local.
+- **push**: Để phản ánh nội dung sửa đổi của **kho lưu trữ local** sang kho **lưu trữ từ xa**.
+- **pull**: Để phản ánh nội dung sửa đổi của **kho lưu trữ từ xa** đến **kho lưu trữ local**.
+- **merge**: Kết hợp sửa đổi từ các nhánh khác nhau. Lịch sử thay đổi vẫn còn lưu ở tất cả các nơi.
+- **conflict**: Tại thời điểm merge, cùng 1 nội dung của cùng một file đã bị sửa đổi ở cả từ xa và local, do đó không thể merge tự động. Bạn sẽ cần phải chỉnh sửa thủ công ở cả hai nơi cùng nhau.
 
 # Cài đặt và cấu hình Git
 
@@ -1223,4 +1278,586 @@ Ví dụ, nếu áp dụng để hợp nhất hóa lịch sử, thì sẽ phân 
 - Trường hợp đưa code mới nhất của branch tích hợp vào branch chủ đề thì sử dụng rebase.
 - Trường hợp đưa branch chủ đề vào branch tích hợp, thì trước hết hãy rebase rồi merge.
 
-# Kỹ thuật phân và gộp Nhánh
+## Lệnh làm việc với nhánh
+
+```powershell
+git branch 			#liệt kê các nhánh
+git branch -v 			#liệt kê các nhánh + commit cuối
+git branch --merged		#các nhánh gộp vào nhánh này
+git branch --no-merged		#các nhánh không gộp vào nhánh này
+git branch branchname		#tạo nhánh mới
+git checkout -b branchname	#tạo nhánh mới, khi đang đứng ở một snapshot cũ
+git checkout branchname		#chuyển nhánh
+git merge branchname		#gộp nhánh với nhánh hiện tại
+git base branchname		#gộp nhánh với nhánh hiện tại
+git mergetool			#công cụ trực quan xử lý xung đột merge
+git branch -d branchname	#xóa nhánh
+```
+
+# Làm việc với Remote Respository
+
+## Remote Repository là gì?
+
+Khi làm việc với Git nói riêng hay với các VCS nói chung thì hầu hết (>90%) các thao tác làm việc là ở local (ở máy client) với Local Repository ví dụ như các việc commit, xem lại lịch sử ...
+
+Khi có nhu cầu chia sẻ, hoặc làm việc nhóm, hoặc đơn giản hơn làm việc ở nhiều máy (ở văn phòng, ở nhà ...) thì lúc đó sẽ sử dụng đến Remote Repository, nó đơn giản là một Repository lưu ở phía Server.
+
+Git Server đơn giản là máy chủ có cài đặt dịch vụ Git, cho phép tạo ra các Repository, ví dụ GitHub chính là một máy chủ Git, có thể tạo ra một Repository trên nó thì đó là Remote Repository. Sau đó, ta có thể chép (clone) Remote Repository về máy thành Local Repository để làm việc và khi cần lại cập nhật lên Remote.
+
+<p align="center">
+	<img src="./img/Remote-Repo.png" alt = "git-log">
+</P>
+
+## Remote repository và local repository
+
+Đầu tiên, repository của Git được phân thành 2 loại là remote repository và local repository.
+
+- Remote repository: Là repository để chia sẻ giữa nhiều người và bố trí trên server chuyên dụng.
+- Local repository: Là repository bố trí trên máy của bản thân mình, dành cho một người dùng sử dụng.
+
+Do repository phân thành 2 loại là local và remote nên với những công việc bình thường thì có thể sử dụng local repository và thực hiện trên toàn bộ máy sẵn có. Khi muốn công khai nội dung công việc mà bản thân đã làm trên local repository, thì sẽ upload lên remote repository rồi công khai. Thêm nữa, thông qua remote repository cũng có thể lấy về nội dung công việc của người khác.
+
+## Cài đặt để có Git Server
+
+Để có được Git Server cần làm hai việc
+
+1. Cài Git trên máy Server
+2. Cài đặt SSH cấu hình để user kết nối đến Server được bằng SSH (Có sử dụng SSH Key là tốt nhất).
+
+Để cài đặt làm đúng như hướng dẫn trong phần giới thiệu về Git
+
+**Trên Server Linux (Ubuntu, Debian, ...) chạy lệnh**
+
+```bash
+sudo apt install git-all
+```
+
+**Trên CentOs chạy lệnh**
+
+```bash
+sudo yum install git
+```
+
+Trên Windows Server tải phiên bản Git phù hợp [tại đây](#cài-đặt-git) về và chạy bộ cài đặt
+
+Bằng cách trên đã cài đặt Git, ở giao diện dòng lệnh (Windows Server hoặc Linux Server) gõ lệnh sau để xem Git đã có chưa
+
+```powershell
+git --version
+```
+
+## Cài đặt OpenSSH trên Server
+
+Vì sẽ cấu hình để có được các Remote Repository được clone và cập nhật (push, pull ...) thông qua giao thức SSH nên cần cài đặt nó.
+
+Tóm lại sau bước này bạn cần có một user/pass để kết nối được đến Server bằng SSH (tốt nhất dùng SSH key thay cho password).
+
+Chú ý: Khi làm việc với nhiều Server khác nhau chứa Remote Repository, trên Windows với mỗi user/server có thể thiết lập thông số riêng (cổng, file SSH Key ...) để kết nối SSH bằng cách khai báo trong file C:\Users\UserName\.ssh\config, ví dụ:
+
+```ssh
+Host IPv4 - username
+  User username
+  Hostname IPv4
+  PreferredAuthentications publickey
+  IdentityFile "path ssh"
+```
+
+```ssh
+Host  139.59.250.132 - root
+	User root
+	Hostname  139.59.250.132
+	Port 22
+	PreferredAuthentications publickey
+	IdentityFile "/home/root/.ssh/id_rsa2"
+```
+
+Với cấu hình trên khi Git truy cập đến Server có địa chỉ IPv4 với tên đăng nhập là username thì sẽ dùng cổng mặc định 22 và sử dụng SSH lưu tại `path ssh`
+
+Truy cập đến Server có địa chỉ 139.59.250.132 với tên đăng nhập là root thì sẽ dùng cổng 22 và sử dụng SSH lưu tại /home/root/.ssh/id_rsa2
+
+## Tạo Remote Repository
+
+Chuẩn bị một tài khoản user của hệ thống Linux (Windows) dùng để tạo hệ thống Git, cho phép truy cập tới Server bằng SSH. Nếu muốn tạo user mới trên Linux, ví dụ user tên là XuanNhan làm như sau:
+
+```bash
+sudo adduser XuanNhan
+```
+
+**Đặt password cho user**
+
+```bash
+sudo passwd XuanNhan
+```
+
+Sau các lệnh này hệ thống đã có user với tên là XuanNhan và thư mục mặc định của user này là `/home/XuanNhan/`
+
+Đăng nhập hệ thống với user muốn sử dụng, ví dụ trên Linux lệnh sau sẽ chuyển user là XuanNhan sau đó chuyển đến thư mục của user
+
+```bassh
+su XuanNhan
+cd ~
+```
+
+Tạo thư mục chứa Remote Repository, ví du thư mục đặt tên là myproject.git, sau đó di chuyển vào thư mục đó để thực hiện lệnh Git
+
+```bash
+mkdir myproject
+cd myproject
+```
+
+Gọi lệnh Git để thiết lập thư mục myproject là nơi lưu trữ Remote Repository
+
+```bash
+git init --bare
+```
+
+Sau lệnh đó đã có một Remote Repo, địa chỉ để chia sẻ, làm việc với Remote Repository này là
+
+```bash
+XuanNhan@IPv4:myproject.git
+```
+
+Bây giờ Remote Repository này đã sẵn sàng để các máy khách clone, cập nhật,...
+
+## Thiết lập để làm việc với Remote Repository
+
+Ngay sau khi khởi tạo ra một Remote Repository với địa chỉ ví dụ XuanNhan@IPv4:myproject.git, thì việc đầu tiên từ một Local Repository cần kết nối tới nó và push dữ liệu đầu tiên
+
+Từ Local Repository gõ lệnh kiểm tra xem nó đang ánh xạ đến Remote Repository nào
+
+```powershell
+git remote
+```
+
+Nếu chưa thiết lập cho nó một Remote Repository với câu lệnh git remote add với cú pháp như sau:
+
+```powershell
+git remote add name_remote addr_remote
+```
+
+Trong đó **name_remote** là một cái tên do bạn tự đặt ví dụ như: origin, abc, xyz ... **addr_remote** địa chỉ của Remote Repository. Ví dụ:
+
+```powershell
+git remote add origin XuanNhan@IPv4:myproject.git
+```
+
+Sau lệnh đã thiết lập trong Local Repository có một Remote Repository có tên là origin với địa chỉ kết nối **XuanNhan@IPv4:myproject.git**. Gõ lại lệnh git `remote -v` để xem nó liệt kê ra.
+
+Vì **Remote Repository** mới khởi tạo trên Server nên cập nhật cho nó dữ liệu đầu tiên bằng lệnh `git push` với tham số chỉ ra là tên Remote Repository (`origin`) và nhánh cập nhật (`master` - tìm hiểu về nhánh branch sau, ở đây chỉ cần biết luôn có 1 nhánh là `master`)
+
+```powershell
+git push origin master
+```
+
+Từ đây chính thức **Remote Repository** bắt đầu hoạt động, từ **Local Repository** bạn có thể cập nhật lên (push), lấy dữ liệu về (pull, fetch) ... Hoặc từ một máy khác, hay lúc khác cần bản sao **Remote Repository** về máy để tạo ra một Local Repository thì dùng lệnh:
+
+```powershell
+git clone XuanNhan@IPv4:myproject.git
+```
+
+Nó sẽ clone về máy và thiết lập luôn dự án tải về có **Remote Repository** với tên là `origin`
+
+# Lệnh cơ bản làm việc với Remote Repository
+
+## Lệnh git fetch
+
+Lấy dữ liệu mới từ **Remote Repository**, những loại dữ liệu này trên **Local Repository** là chưa có (ví dụ dữ liệu do người khác mới đưa lên). Lệnh này không làm ảnh hưởng đến các code đang có của dự án trên Local, nó chỉ lấy về nhưng thông tin file chưa có. Khi là việc ở Local bất kể lúc nào bạn đều có thể gọi `git fetch` với cú pháp
+
+```bash
+git fetch origin
+```
+
+`origin` là tên của remote, có thể thay bằng những tên bạn đặt trong local
+
+## Lệnh git pull
+
+Lấy toàn bộ dữ liệu mới theo Remote. Lệnh này gần như tải lại, cập nhật lại toàn bộ code hiện tại của Local sao cho giống Remote. Nếu local chưa `commit` và push code cũ có thể bị mất.
+
+```bash
+git pull origin master
+```
+
+`master` là tên nhánh
+
+Nói chung cần đảm bảo trạng thái ở Local là clean khi pull, nên cần commit trước hoặc bỏ tất cả các file `untracked`
+
+```bash
+git clean  -d  -fx .
+```
+
+## Lệnh git push
+
+Cập nhật dữ liệu từ Local lên Remote, câu lệnh cần chỉ ra tên Remote và nhánh git `push <remote> <branch>`, ví dụ
+
+```bash
+git push origin master
+```
+
+## Lệnh Git remote
+
+Xem thông tin các Remote có trong Local
+
+```bash
+git remote -v
+```
+
+Thêm Remote vào Local `git remote add <remote_name> <url>`, ví dụ:
+
+```bash
+git remote add origin XuanNhan@IPv4:myproject.git
+```
+
+Xem thông tin chi tiết về một Remote ví dụ với Remote có tên `origin`
+
+```bash
+git remote show origin
+```
+
+Đổi tên một Remote trong Local, ví dụ Remote có tên **phuc** đổi thành **vy**
+
+```bash
+git remote rename phuc vy
+```
+
+## Sự khác nhau của git fetch và git pull
+
+Hai lệnh này đều lấy thông tin từ Remote cập nhật vào Local, tuy nhiên có sự khác nhau lớn như hình dưới:
+
+<p align="center">
+	<img src="./img/pull&fetch.png" alt = "git-log">
+</P>
+
+Như sơ đồ trên thì ta thấy khi `git fetch` nó cập nhật thông tin từ **Remote Repository** vào **Local Repository** nhưng không ảnh hưởng đến các file code trong thư mục làm việc, còn khi `git pull` nó cập nhật cả thư mục làm việc của Local (thư mục chứa file code), có nghĩa các file code sẽ cập nhật theo Remote.
+
+# GitHub
+
+## Github là gì?
+
+**GitHub** là một dịch vụ nổi tiếng cung cấp kho lưu trữ mã nguồn **Git** cho các dự án phần mềm. G**ithub có đầy đủ những tính năng của Git**, ngoài ra nó còn bổ sung những tính năng về social để các developer tương tác với nhau.
+
+Vài thông tin về GIT:
+
+- Là công cụ giúp quản lý source code tổ chức theo dạng dữ liệu phân tán.
+- Giúp đồng bộ source code của team lên 1 server.
+- Hỗ trợ các thao tác kiểm tra source code trong quá trình làm việc (diff, check modifications, show history, merge source, …)
+
+<p align="center">
+	<img src="./img/Octocat.png" alt = "git-log" height="250px">
+</P>
+
+GitHub có 2 phiên bản: **miễn phí** và **trả phí**. Với phiên bản có phí thường được các doanh nghiệp sử dụng để tăng khả năng quản lý team cũng như phân quyền bảo mật dự án. Còn lại thì phần lớn chúng ta đều sử dụng Github với tài khoản miễn phí để lưu trữ source code.
+
+Github **cung cấp các tính năng social networking** như feeds, followers, và network graph để các developer học hỏi kinh nghiệm của nhau thông qua lịch sử commit.
+
+Nếu một comment để mô tả và giải thích một đoạn code. Thì với Github, commit message chính là phần mô tả hành động mà bạn thực hiện trên source code.
+
+Github trở thành một yếu tố có sức ảnh hưởng lớn trong cộng động nguồn mở. Cùng với Linkedin, Github được coi là một sự thay thế cho CV của bạn. Các nhà tuyển dụng cũng rất hay tham khảo Github profile để hiểu về năng lực coding của ứng viên.
+
+Giờ đây, kỹ năng sử dụng git và Github từ chỗ ưu thích sang bắt buộc phải có đối với các ứng viên đi xin việc.
+
+## Cách làm việc trên GitHub
+
+<p align="center">
+	<img src="./img/github.jpg" alt = "git-log">
+</P>
+
+Biết được **_GitHub là gì_** thôi chưa đủ. Bạn còn cần phải nắm được **_quy tắc làm việc trên GitHub_**. Có hai nền tảng để bạn làm việc với **GitHub** là **local workflow** và **server workflow**.
+
+Ở **local workflow**, bạn có thể thay đổi source code. Sau đó xác nhận các thay đổi đó tại **server workflow**. Lưu ý, bản xác nhận trên server phải chứa tính năng hoàn chỉnh hoặc có thể chạy được. Việc xác nhận các đoạn code chưa hoàn chỉnh, còn dở dang sẽ ảnh hưởng các thành viên khác khi họ cùng sử dụng kho lưu trữ.
+
+Từ kho lưu trữ của **GitHub**, bạn có thể tạo bản build cho production site bằng cách gửi các _source code_ thay đổi lên đó. Khi sử dụng kho lưu trữ của server, người dùng sẽ phải cung cấp mã chứng nhận, hệ thống sẽ so sánh **SSH key** ở **local** của bạn và **SSH key** trên **server** tương ứng với **account** mà đã đăng ký trước đó.
+
+**Thao tác với repository ở local**
+
+Với 2 command thường dùng là git add và git commit
+
+- Git add: add file đã thay đổi vào stage
+- Git commit các file đã add vào stage lên repository ở local
+
+Ngoài ra bạn xem một số command khác
+
+**Làm việc với repository ở server GitHub**
+
+Cuối cùng khi có một bản ổn định và hoàn tất ta sẽ quyết định cập nhật nó lên **repository server** với:
+
+- **push**: push thay đổi từ **repository local** lên **repository server**
+- **fetch**: cập nhật thay đổi từ **repository server** về **repository local**
+- **pull/rebase**: sao chép source code từ **server** về **local** workspace (tương đương checkout của SVN)
+
+## Thuật ngữ cơ bản về GitHub
+
+Dưới đây là thuật ngữ của Github:
+
+- **pull request**: Chức năng review source code mà GitHub có. Sử dụng tính năng này để yêu cầu các programer khác xem bản sửa lỗi của bạn là gì khi bạn đưa nó vào kho lưu trữ hoặc nhánh ban đầu. Bạn có thể ngăn chặn lỗi và sửa source code tốt hơn.
+- **Fork**: Khả năng sao chép kho lưu trữ của các programer khác trên GitHub và tự chỉnh sửa chúng. Bằng cách sao chép với chức năng này, kho lưu trữ của nguồn sao chép cũng được hiển thị và có thể làm rõ source code nào là phiên bản gốc hay phiên bản sao chép.
+- **issue**: Chức năng quản lý được cung cấp trong GitHub. Bạn có thể quản lý các sự cố trong dự án và source code, đồng thời có thể quản lý các sự cố bằng cách liên kết chúng với thông tin trên GitHub như source code , pull request và lịch sử sửa đổi.
+- **organization**: Một nhóm như một tổ chức, một nhóm hoặc một dự án. Bạn có thể tạo và quản lý kho lưu trữ trong tổ chức.
+- **Gist**: Một đoạn code ngắn và dịch vụ chia sẻ ghi nhớ được cung cấp bởi GitHub. Không chỉ kiểm soát phiên bản, mà bạn còn có thể sao chép những gì các programer khác đã viết và nhúng nó vào các blog khác ngoài GitHub.
+- **Pages**: Dịch vụ lưu trữ được cung cấp bởi GitHub. Nếu bạn có tài khoản GitHub, bạn có thể công khai các trang web miễn phí. Dễ dàng để làm và thậm chí bạn có thể sửa đổi một trang web với một kho lưu trữ tùy chỉnh.
+
+## Lịch sử của GitHub
+
+GitHub được viết bằng Ruby on Rails và Erlang do Tom Preston-Werner, Chris Wanstrath, và PJ Hyett phát triển trang web được đưa ra và chạy chính thức vào tháng 4 năm 2008.
+
+Tính đến thời điểm tháng 3 năm 2018 Github đang là dịch vụ máy chủ lưu trữ các mã nguồn lập trình lớn nhất thế giới. Với hơn 25 triệu người dùng và hơn 80 triệu mã nguồn dự án, Github đã trở thành một phần không thể thiêu đối với cộng đồng phát triển mã nguồn mở và cộng đồng lập trình viên trên toàn thế giới.
+
+## Lợi ích của Github đối với lập trình viên
+
+**Quản lý source code dễ dàng**
+
+Khi bạn tạo một repo, toàn bộ source code của repo đó được lưu trên GitHub. Tại đây, bạn có thể coi lại quá trình mình đã làm việc thông qua các comment sau mỗi lần commit. Và cái hay ở đây, là nhiều người có thể cùng làm một repo.
+
+Lợi ích đầu tiên, chính là bạn biết được ai đã commit và commit cái gì. Tiếp theo, source của bạn có thể phát triển theo nhiều nhánh. Nguyên tắc làm việc với các nhánh như thế này: Bạn có thể rẽ nhiều nhánh để phát triển project. Nhưng cuối cùng, bạn phải merge lại vào nhánh MASTER để ra được project hoàn chỉnh.
+
+**Tracking sự thay đổi qua các version**
+
+Khi có nhiều member cùng thực hiện một dự án thì khá là phức tạp để theo dõi revisons – ai thay đổi cái gì, lúc nào và mấy cái files đó được stored ở đâu. Đừng lo vì GitHub đã tính đến chuyện này giúp bạn, bằng cách luôn lưu lại những thay đổi bạn đã push lên repository. Cũng tương tự với Microsoft Word hay Google Drive, bạn có một lịch sử phiên bản để phòng trường hợp các phiên bản trước đó bị mất hay không được lưu.
+
+**Markdown**
+
+Markdown là một cách định dạng text trên web. Bạn có thể chỉnh sửa cách hiển thị của document, format từ như định dạng in đậm hay in nghiêng, thêm hình và tạo list những thứ bạn có thể làm với Markdown. Hầu hết, Markdown chỉ là đoạn text đơn thuần với những ký tự đặc biệt chèn vào, như # hay \*. Trong GitHub thì bạn có thể sử dụng Mardown ở những nơi: Git, Comments tại Issues và Pull Requests, các file có đuôi .md hay .markdown extension.
+
+## Github là một kho tài nguyên tuyệt vời
+
+Với chức năng Explore, bạn có thể theo dõi, tìm kiếm những open source projects theo đúng technology pattern mà bạn ưa thích. Github hỗ trợ code search không kể nó ở dưới dạng một project riêng biệt hay là website. Ngoài ra, nền tảng này cũng có SEO khá tốt nên người dùng có thể tìm kiếm bất kỳ code string nào được chia sẻ public.
+
+## Github Action
+
+Trên server của Github có những workflow scripts chạy tự động. Dev có thể dùng chúng để phản hồi các events trên repositories hoặc thực hiện vài action. Ví dụ như tôi có viết một cái tiện ích nho nhỏ, **Autotagger – GitHub Marketplace**, sẽ tự động tạo git tafs khi mà số phiên bản của package.json thay đổi. Nhìn thì đây chỉ là hành động nhỏ nhưng sẽ có tác động rất lớn khi phải truy tìm code ngược về bản phát hành, và bớt đi một cơn “nhức đầu” cho các project maintainers đó chứ.
+
+<p align="center">
+	<img src="./img/github-actions.png" alt = "git-log">
+</P>
+
+## Github Package Registry
+
+Cái package registry này cho phép lập trình viên duy trì distribution registries của họ, bao gồm npm, docker, maven, nuget và Ruby gems.
+
+<p align="center">
+	<img src="./img/package-registry.png" alt = "git-log">
+</P>
+
+Đừng ngần ngại mà không tạo ngay cho mình một tài khoản Github. Tạo những project của riêng mình và chia sẻ với mọi người, hoặc bạn có thể thoải mái fork một project của một open source nào đó. Tạo pull request hoặc issues nếu như tìm được lỗi, cần support.
+
+# GitLab và Kiến trúc Gitlab
+
+## GitLab là gì?
+
+**GitLab** khá nổi tiếng và là một mã nguồn mở của máy chủ Git được thực hiện bởi hơn 50.000 tổ chức. Trong vài năm gần đây Gitlab đã phát triển mạnh mẽ với sự hỗ trợ của cộng đồng mạng, hàng nghìn người sử dụng trên một máy chủ duy nhất hoặc một số máy chủ hoạt động tương tự. Nếu bạn cần thiết lập một máy chủ Git, thì **GitLab** cung cấp cho bạn một giải pháp hoàn hảo.
+
+**Gitlab** là một hệ thống self-hosted để quản lý mã nguồn của bạn. Bản đầu tiên được phát hành vào tháng 10/2011 và được cập nhật vào ngày 22 hàng tháng. Gitlab được phát hành theo tiêu chuẩn của _MIT_.
+
+<p align="center">
+	<img src="./img/Gitlab.png" alt = "git-log">
+</P>
+
+**Gitlab** được thành lập bởi **Dmitriy Zaporozhets** năm 2013. Dự án bao gồm hai nhóm chính: một bên là “open source core team” và một bên là “**GitLab B.V. team**” (chi nhánh của công ty Gitlab).
+
+**GitLab** được sử dụng để lư trữ trên **Github**, nhưng với sự nỗ lực của **Dmitriy Zaporozhets** suốt một năm làm việc tại GitLab, kể từ tháng 1/2014 mã nguồn được lưu trữ trên sever chính của gitlab là `gitlab.com`. Các nhánh của **GitLab** được lưu trữ trên github, sẽ hoạt động như một source, nơi bạn có thể pull, push và merge các yêu cầu.
+
+## Phiên bản Gitlab
+
+<p align="center">
+	<img src="./img/icon-gitlab.png" alt = "git-log" height="250px">
+</P>
+
+**Gitlab community editon (CE)** – Gitlab phiên bản cộng đồng: là phiên bản mã nguồn mở. Được cung cấp qua Git từ kho lưu trữ chứa gitlab. Phiên bản mới nhất của gitlab được các nhà phát triển release tại các nhánh stable và nhánh master.
+
+**Gitlab enterprise edition (EE)** – Gitlab phiên bản doanh nghiệp: là phiên bản có sẵn không lâu sau khi phát hành bản CE, được cung cấp từ kho lưu trữ của gitlab.com. Một doanh nghiệp đăng lý GitLab được sự support của GitLad BV những khó khăn khi cài đặt.
+
+**Gitlab continuous intergration (CI)** - Là một giải pháp tích hợp được thực hiện bở nhóm phát triển Gitlab
+
+## Tại sao nên dùng GitLab?
+
+<p align="center">
+	<img src="./img/gitlab-5.jpg" alt = "git-log">
+</P>
+
+Những lý do khiến bạn cần sử dụng **GitLab** là gì?
+
+- Mang lại sự tiện lợi cho các lập trình viên khi cần lưu trữ, tải lên, tải xuống code.
+- Kiểm soát các thay đổi trong code nhanh chóng, chính xác.
+- Hỗ trợ việc quản lý, phân phối công việc trong các dự án lập trình hiệu quả hơn.
+
+## Protected branches:
+
+**Gitlab** cho phép đọc hoặc ghi vào repository và các branches.
+
+Để cấp quyền cho những người được phép commit và pushing code, gitlad đã tạo ra protected branches.
+
+Một protected branch gồm 3 điều cơ bản sau:
+
+- Ngăn chặn việc push từ tất cả mọi người trừ user và master.
+- Ngăn chặn việc push code lên branch từ những người không có quyền truy cập.
+- Ngăn chặn bất kỳ ai thực hiện xóa branch.
+
+Bạn có thể tạo bất kỳ branch từ một `protected branch`. Gitlad mặc định `master branch` là `protected branch`.
+
+Để bảo mật một branch, user cần có ít nhất một quyền cho phép từ `master branch`.
+
+## Tầng vật lý của GitLab
+
+**Kho lưu trữ**: xử lý các dự án trong **Gitlab**. Các sản phẩm lưu trữ (như dự án) có thể được lưu trữ tại warehouse. Nó có thể là một đĩa cứng hoặc một cái gì đó phức tạp hơn như hệ thống tập tin NFS.
+
+**Nginx** hoạt động giống như **front-desk**. Người sử dụng đến **Nginx** và yêu cầu hành động được thực hiện bởi worker trong văn phòng.
+
+Cơ sở dữ liệu là một loạt các file của các **metal file cabinets** với các thông tin về:
+
+Các sản phẩm trong warehouse (siêu dữ liệu, issuse, các yêu cầu merge ...).
+
+Người sử dụng đến **front-desk** (permissions).
+
+**Redis**: là phần giao tiếp một broad với cubby holes- cái mà có thể chứa các nhiệm vụ, yêu cầu cho worker.
+
+**Sidekiq** là một worker, công việc chủ yếu là xử lý việc gửi email. Nó nhận nhiệm vụ từ Redis.
+
+**A Unicorn worker**: là một nhân viên xử lý các nhiệm vụ nhanh chóng và dễ. Học làm việc với Redis. Công việc của họ gồm:
+
+Kiểm tra quyền truy cập bằng cách kiểm tra các session của người dùng được lưu trữ trong Redis cubby hole.
+
+Làm nhiệm vụ cho **Sidekiq**.
+
+Lấy công cụ từ **warehouse** hoặc di chuyển mọi thứ xung quanh trong đó
+
+**Gitlab-shell**: là loại thứ ba của worker, nhiệm vụ của nó là tạo các đơn đặt hàng từ một máy fax (SSH) thay vì **front-desk (HTTP)**. **Gitlab-shell** giao tiếp với **Sidekiq** qua **Redis** và hỏi những câu hỏi nhanh của Unicorn worker hoặc trực tiếp hoặc qua **front-desk**.
+
+**Gitlab enterprise edition** (ứng dụng) là tập hợp các quy trình và hoạt động kinh doanh được điểu hành bởi ofice (văn phòng).
+
+## System layout
+
+Khi đề cập đến Git trong những hình ảnh có nghĩa là thư mục home của người sử dụng Git thường là `/home/git`.
+
+**Repositories bare** nằm trong đường dẫn `/home/git/repositories`. Gitlab là một ứng dụng ruby on ralis do đó để biết rõ các hoạt động bên trong bạn có thể tìm hiểu bằng cách tìm hiểu về hoạt động của ruby on ralis.
+
+Để sử dụng kho dữ liệu qua **SSH** có một ứng dụng thêm vào được gọi là **gitlab-sell** cái mà được cài đặt tại `/home/git/gitlab-shell`.
+
+## Components
+
+<p align="center">
+	<img src="./img/gitlab-architecture.png" alt = "git-log">
+</P>
+
+## Cách cài đặt GitLab trên Windows
+
+**Bước 1**: tạo một thư mục mới đặt tên GitLab-Runner trong thư mục hệ thống. Bạn nên tạo nó trong ổ đĩa cài đặt của máy thông thường là ổ C, C:GitLab-Runner.
+
+**Bước 2**: tải phiên bản GitLab tương ứng với hệ điều hành của máy:
+
+- [GitLab 32bit](https://gitlab-runner-downloads.s3.amazonaws.com/latest/binaries/gitlab-runner-windows-386.exe)
+- [itLab 64bit](https://gitlab-runner-downloads.s3.amazonaws.com/latest/binaries/gitlab-runner-windows-amd64.exe)
+
+Copy file cài vừa tải về vào thư mục đã tạo và đổi tên file `gitlab-runner.exe`.
+
+**Bước 3**: Mở command prompt hoặc PowerShell lên và nhập dòng code sau vào.
+
+```powershell
+cd C:GitLab-Runner
+
+ .gitlab-runner.exe install
+
+ .gitlab-runner.exe start
+```
+
+**Bước 4**: Đăng ký tài khoản GitLab
+
+- Dừng chương trình GitLab đang chạy bằng câu lệnh: `gitlab-runner.exe stop`
+- Chạy câu lệnh đăng ký tài khoản: `gitlab-runner.exe register`
+- Tại đây, bạn sẽ nhận thông báo lỗi với chữ đỏ, hãy dừng lệnh cài đặt bằng lệnh stop: `gitlab-runner.exe register stop`
+- Thông báo “**Please enter the gitlab-ci coordinator URL (e.g. https://gitlab.com )**”. Bạn nhập địa chỉ URL vào: https://gitlab.com
+
+Thông báo “**Please enter the gitlab-ci token for this runner**” yêu cầu nhập token. Để lấy token bạn phải đăng ký tài khoản gitlab. Sau đó, đăng nhập tài khoản chọn `Setting => CI/CD`, kéo thanh trượt xuống mục “**Set up a specific Runner manually**” để lấy token, nhập vào command prompt.
+
+_xxx (token của bạn)_
+
+Thông báo “Please enter the gitlab-ci description for this runner”. Yêu cầu nhập mô tả cho runner: My-runner (bạn có thể dùng tên khác hoặc chỉnh sửa sau).
+
+Thông báo “**Please enter the gitlab-ci tags for this runner (comma separated):**” nhập thẻ tag cho runner: `my-tag`,`another-tag`.
+
+Thông báo cài đặt thành công “**Registering Runner… succeeded**”. Nhập vào `Runner executor: docker`.
+
+Nếu chọn docker, bạn sẽ được hỏi dùng hình ảnh mặc định cho các `projects: alpine:latest`.
+
+## Cách cài đặt GitLab trên Linux
+
+Chuẩn bị máy chủ để cài đặt **GitLab**:
+
+- Ubuntu >= 12.03 64-bit
+- Một CPU có một hoặc 2 nhân
+- RAM: 1GB hoặc 2GB
+- Cần kết nối internet
+
+Thao tác thực hiện:
+
+**Bước 1**: Cài đặt và cấu hình
+
+```bash
+Sudo apt-get install openssh-server
+
+Sudo apt-get install postfix
+```
+
+**Bước 2**: Tải gói omnibus và cài đặt
+
+```bash
+Wget https://downloads-packages.s3.amazonaws.com/ubuntu-12.04/gitlab_7.9.2-omnibus-1_amd64.deb
+
+Sudo dpkg –i gitlab_7.9.2-omnibus-1_amd63.deb
+```
+
+**Bước 3**: Cấu hình GitLab
+
+```bash
+Sudo gitlab-ctl reconfigure
+```
+
+**Bước 4**: Vào Hostname và đăng nhập
+
+```bash
+Username: yourussername
+
+Password: yourpassork
+```
+
+## Lưu ý khi sử dụng GitLab
+
+Ngày nay, GitLab trở nên rất phổ biến không chỉ đối với cá nhân người lập trình mà còn ở các nhóm, tổ chức, doanh nghiệp. Nhờ khả năng quản lý người dùng trên hệ thống một cách hiệu quả, dưới đây là những tính năng quản lý của GitLab, quản lý các nhóm, bảo mật hệ thống,…
+
+## Thêm người dùng
+
+Tính năng thêm người dùng chắc chắn không thể thiếu. Đặc biệt khi thực hiện các dự án lớn. Cũng giống như phần lớn các công cụ quản trị khác, ngoài thông tin cơ bản, GitLab còn cho phép bổ sung thêm các tài khoản Skype, LinkedIn, Twitter (nếu muốn).
+
+Ảnh đại diện là một yếu tố quan trọng khi thêm người dùng mới, ảnh sẽ xuất hiện bên cạnh tên người dùng để các thành viên trong dự án thấy. Những thông tin khác có thể tìm thấy bên trong trang hồ sơ.
+
+Việc thêm người dùng mới trong GitLab cũng có thể đặt ra giới hạn về số lượng. Khi thêm người dùng mới, bạn cũng có thể bỏ cờ Admin để người này không có các quyền điều khiển của người quản trị.
+
+## Tạo nhóm
+
+Không gian nhóm là nơi để bạn đặt các dự án của mình vào và phân quyền cho các thành viên bên trong nhóm. Trong trường hợp, bạn tạo một dự án mới trong nhóm thì tất cả thành viên trong nhóm sẽ tự động được cấp quyền truy cập vào dự án.
+
+Khi tạo một nhóm mới bạn sẽ được cấp quyền Owner(cho phép chỉnh sửa, xóa nhóm và quản lý người dùng trong nhóm). Các người dùng mới được thêm vào có thể được chia làm 5 mức:
+
+- Guest
+- Reporter
+- Master
+- Developer
+- Owner.
+
+Bằng cách sử dụng nhóm bạn có thể dễ dàng ứng dụng trong việc quản lý, chia sẻ công việc, dự án. Khéo léo tận dụng các quyền người dùng để đảm bảo tính bảo mật của dự án ngay cả đối với các thành viên trong nhóm.
+
+## User Permissions
+
+Sở hữu 5 mức phân quyền khác nhau, GitLab mang đến khả năng đa dạng phân quyền người dùng trong hệ thống. Bên cạnh Owner thì chỉ có Master có thêm quyền truy cập, Master cũng có thể tạo các dự án trong nhóm.
+
+## Bảo vệ Branches
+
+Bảo vệ các Branches quan trọng là điều không thể thiếu khi quản lý các dự án code. Bằng cách đánh dấu Protected, những người dùng được cấp quyền developer hoặc thấp hơn sẽ không thể thực hiện việc push thẳng vào. Điều này sẽ đảm bảo việc tránh khỏi các rủi ro không đáng có như mất dữ liệu.
+
+## Khả năng hiển thị Project
+
+GitLab mang đến 3 kiểu protect là private, internal và public.
+
+**Public** sẽ cho phép mọi người xem dự án, pull code của bạn. Kể cả họ không có tài khoản trên hệ thống. Người dùng có tài khoản trên hệ thống dù không được chấp nhận truy cập vẫn có thể tạo các merge request hoặc mở một issue.
+
+**Private** dùng để chỉ những dự án chỉ hiển thị với người được thêm vào dự án. Các quyền của người dùng được mời sẽ phụ thuộc vào phân quyền do người quản trị quyết định khi thực hiện mời.
+
+**Internal** dùng để giới hạn những người có tài khoản trong hệ thống GitLab. Những người dùng đã đăng nhập sẽ được phân quyền tự động là Guest.
