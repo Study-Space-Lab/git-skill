@@ -1996,6 +1996,6 @@ Các bước tạo release.
 
 # Credit
 
-**Tổng hợp nội dung bởi**: [**Nhân Nguyễn**](https://www.facebook.com/FoxMinChan/)
+**Tổng hợp nội dung bởi**: [**Pháp Lương**](https://www.facebook.com/luongphap1810/)
 
 **Nguồn:** Tổng hợp từ nhiều nguồn
